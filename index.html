@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Battle of Mycella Milleriana</title>
+  <meta property="og:title" content="The Battle of Mycella Milleriana">
+  <meta property="og:description" content="Dr. Dave versus the spooky mutated mold apocalypse.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #080c10;
+      --panel: #131b22;
+      --acid: #91ff2f;
+      --pink: #ff3cff;
+      --cyan: #67e7ff;
+      --warn: #ffcc37;
+      --danger: #f04a38;
+      --text: #eaffd8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(145,255,47,0.14), transparent 26rem),
+        linear-gradient(145deg, #030507, #18202a 54%, #0b100d);
+      color: var(--text);
+      font-family: "Trebuchet MS", Arial, sans-serif;
+    }
+
+    main {
+      width: min(1120px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 10px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 2px solid #35434d;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #17222b, #0d1218);
+      box-shadow: 0 5px 0 rgba(0,0,0,0.42);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--acid);
+      font-size: clamp(1.35rem, 4.8vw, 2.8rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(145,255,47,0.55), 3px 3px 0 #000;
+      letter-spacing: 0;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(70px, auto));
+      gap: 6px;
+    }
+
+    .hud-item {
+      min-width: 72px;
+      padding: 7px 8px;
+      border: 1px solid #40515b;
+      border-radius: 6px;
+      background: #0d1419;
+      text-align: center;
+    }
+
+    .hud-item span {
+      display: block;
+      color: #9db0bb;
+      font-size: 0.65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hud-item strong {
+      display: block;
+      color: #fff;
+      font-size: 1.05rem;
+      line-height: 1.05;
+    }
+
+    .game-wrap {
+      position: relative;
+      min-height: 560px;
+      overflow: hidden;
+      border: 3px solid #242f38;
+      border-radius: 8px;
+      background: #000;
+      box-shadow: 0 9px 0 rgba(0,0,0,0.45);
+      touch-action: manipulation;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 560px;
+      display: block;
+      image-rendering: auto;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      background: rgba(1, 5, 6, 0.58);
+      z-index: 3;
+    }
+
+    .panel {
+      width: min(650px, 100%);
+      padding: 18px;
+      border: 2px solid #4e6972;
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(20,29,36,0.98), rgba(9,13,16,0.98));
+      box-shadow: 0 0 0 3px rgba(145,255,47,0.15), 8px 8px 0 rgba(0,0,0,0.45);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      color: var(--pink);
+      font-size: clamp(1.7rem, 6vw, 3.1rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(255,60,255,0.5), 3px 3px 0 #000;
+    }
+
+    p {
+      margin: 8px 0;
+      line-height: 1.35;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      min-height: 48px;
+      border: 2px solid #000;
+      border-radius: 7px;
+      background: var(--acid);
+      color: #071008;
+      font-weight: 1000;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #1b2a35;
+      color: var(--text);
+      border-color: #4b626d;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    footer {
+      text-align: center;
+      color: #aab7bb;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 760px) {
+      header { grid-template-columns: 1fr; }
+      .hud { grid-template-columns: repeat(2, 1fr); }
+      .game-wrap, canvas { min-height: 480px; }
+      .controls { grid-template-columns: repeat(2, 1fr); }
+      .button-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>The Battle of Mycella Milleriana</h1>
+      <div class="hud">
+        <div class="hud-item"><span>Level</span><strong id="levelText">1</strong></div>
+        <div class="hud-item"><span>Health</span><strong id="healthText">100</strong></div>
+        <div class="hud-item"><span>Score</span><strong id="scoreText">0</strong></div>
+        <div class="hud-item"><span>Boss</span><strong id="bossText">--</strong></div>
+      </div>
+    </header>
+
+    <section class="game-wrap" id="gameWrap">
+      <canvas id="game" width="960" height="540" aria-label="The Battle of Mycella Milleriana game canvas"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="panel">
+          <h2>Containment Protocol: Chaos</h2>
+          <p>Dr. Dave M.O.L.D. has been issued an advanced backpack blaster and a deeply questionable amount of confidence.</p>
+          <p>Move, jump, and hold fire to burn spooky mold formations. On the final boss, press <strong>B</strong> when AIRSTRIKE READY flashes.</p>
+          <div class="button-row">
+            <button id="startBtn" type="button">Start Mission</button>
+            <button class="secondary" id="howBtn" type="button">Controls</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button id="leftBtn" type="button">Left</button>
+      <button id="rightBtn" type="button">Right</button>
+      <button id="jumpBtn" type="button">Jump</button>
+      <button id="fireBtn" type="button">Fire</button>
+    </section>
+
+    <footer>Keyboard: A/D or arrows move, W/Space jump, J fire, B airstrike. Mobile: hold buttons.</footer>
+  </main>
+
+  <script>
+    const canvas = document.querySelector("#game");
+    const ctx = canvas.getContext("2d");
+    const overlay = document.querySelector("#overlay");
+    const levelText = document.querySelector("#levelText");
+    const healthText = document.querySelector("#healthText");
+    const scoreText = document.querySelector("#scoreText");
+    const bossText = document.querySelector("#bossText");
+    const gameWrap = document.querySelector("#gameWrap");
+
+    const assets = {
+      player: loadImage("assets/player-sheet.png"),
+      mold: loadImage("assets/mold-sheet.png"),
+      bg: loadImage("assets/backgrounds.png")
+    };
+
+    const keys = { left: false, right: false, jump: false, fire: false };
+    const playerFrames = {
+      idle: [0, 0, 384, 512],
+      walkA: [384, 0, 384, 512],
+      walkB: [768, 0, 384, 512],
+      jump: [1152, 0, 384, 512],
+      fire: [0, 512, 384, 512],
+      hit: [384, 512, 384, 512],
+      win: [768, 512, 384, 512],
+      crouch: [1152, 512, 384, 512]
+    };
+    const moldFrames = {
+      small: [0, 0, 384, 341],
+      medium: [384, 0, 384, 341],
+      advanced: [768, 0, 384, 341],
+      boss: [1152, 0, 384, 341],
+      globGreen: [0, 341, 384, 341],
+      globPurple: [384, 341, 384, 341],
+      laser: [768, 341, 384, 341],
+      spark: [1152, 341, 384, 341],
+      boomA: [0, 682, 384, 342],
+      boomB: [384, 682, 384, 342],
+      b2: [768, 682, 384, 342],
+      clean: [1152, 682, 384, 342]
+    };
+    const bgFrames = [
+      [0, 0, 768, 512],
+      [768, 0, 768, 512],
+      [0, 512, 768, 512],
+      [768, 512, 768, 512]
+    ];
+
+    const levels = [
+      { name: "Street Level", length: 1850, enemy: "small", hp: 95, projectile: false, fireRate: 999, damage: 0 },
+      { name: "House Level", length: 2000, enemy: "medium", hp: 210, projectile: true, fireRate: 2100, damage: 11 },
+      { name: "Neighborhood Level", length: 2300, enemy: "advanced", hp: 340, projectile: true, fireRate: 1350, damage: 17 },
+      { name: "The Mold Monster", length: 960, enemy: "boss", hp: 2800, projectile: true, fireRate: 720, damage: 12 }
+    ];
+
+    const state = {
+      mode: "title",
+      level: 0,
+      score: 0,
+      camera: 0,
+      worldLength: levels[0].length,
+      enemies: [],
+      projectiles: [],
+      particles: [],
+      powerups: [],
+      airstrike: null,
+      airstrikeReady: false,
+      airstrikeStage: 0,
+      nextThreshold: 0.75,
+      flash: 0,
+      lastTime: 0,
+      player: {
+        x: 85, y: 330, w: 74, h: 100, vx: 0, vy: 0, hp: 100, grounded: false,
+        facing: 1, invuln: 0, power: 0, fireBoost: 1
+      }
+    };
+
+    function loadImage(src) {
+      const img = new Image();
+      img.src = src;
+      return img;
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const scale = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * scale);
+      canvas.height = Math.floor(rect.height * scale);
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    function view() {
+      const rect = canvas.getBoundingClientRect();
+      return { w: rect.width, h: rect.height };
+    }
+
+    function groundY() {
+      return view().h * 0.79;
+    }
+
+    function setupLevel(levelIndex) {
+      const level = levels[levelIndex];
+      state.level = levelIndex;
+      state.worldLength = level.length;
+      state.camera = 0;
+      state.enemies = [];
+      state.projectiles = [];
+      state.particles = [];
+      state.powerups = [];
+      state.airstrike = null;
+      state.airstrikeReady = false;
+      state.airstrikeStage = 0;
+      state.nextThreshold = 0.75;
+      state.flash = 1400;
+      const p = state.player;
+      p.x = 90; p.y = groundY() - p.h; p.vx = 0; p.vy = 0; p.grounded = true; p.invuln = 0; p.fireBoost = 1;
+
+      if (levelIndex < 3) {
+        const count = levelIndex === 0 ? 9 : levelIndex === 1 ? 8 : 10;
+        for (let i = 0; i < count; i++) {
+          const x = 340 + i * ((level.length - 560) / count) + random(-20, 70);
+          const ceiling = i % 4 === 1;
+          const wall = i % 4 === 2;
+          const type = level.enemy;
+          const size = type === "small" ? { w: 82, h: 72 } : type === "medium" ? { w: 112, h: 100 } : { w: 140, h: 130 };
+          state.enemies.push({
+            type, x, y: ceiling ? 82 : wall ? groundY() - size.h - 92 : groundY() - size.h,
+            w: size.w, h: size.h, hp: level.hp, maxHp: level.hp,
+            fireTimer: random(400, level.fireRate), stuck: ceiling ? "ceiling" : wall ? "wall" : "floor"
+          });
+        }
+      } else {
+        state.enemies.push({
+          type: "boss", x: view().w - 360, y: groundY() - 285, w: 315, h: 285,
+          hp: level.hp, maxHp: level.hp, fireTimer: 600, boss: true
+        });
+      }
+      updateHud();
+    }
+
+    function startGame() {
+      state.mode = "playing";
+      state.score = 0;
+      state.player.hp = 100;
+      setupLevel(0);
+      overlay.style.display = "none";
+    }
+
+    function showControls() {
+      overlay.style.display = "grid";
+      overlay.innerHTML = `
+        <div class="panel">
+          <h2>Field Manual</h2>
+          <p><strong>Move:</strong> A/D or arrows. <strong>Jump:</strong> W, Space, or Jump button.</p>
+          <p><strong>Fire:</strong> hold J or Fire. Laser damage only works while the beam is touching mold.</p>
+          <p><strong>Boss:</strong> when AIRSTRIKE READY flashes, press B to call the B-2 and clear the screen.</p>
+          <div class="button-row">
+            <button id="startBtn2" type="button">Start Mission</button>
+            <button class="secondary" id="titleBtn" type="button">Back</button>
+          </div>
+        </div>`;
+      document.querySelector("#startBtn2").addEventListener("click", startGame);
+      document.querySelector("#titleBtn").addEventListener("click", showTitle);
+    }
+
+    function showTitle() {
+      overlay.style.display = "grid";
+      overlay.innerHTML = `
+        <div class="panel">
+          <h2>Containment Protocol: Chaos</h2>
+          <p>Dr. Dave M.O.L.D. has been issued an advanced backpack blaster and a deeply questionable amount of confidence.</p>
+          <p>Move, jump, and hold fire to burn spooky mold formations. On the final boss, press <strong>B</strong> when AIRSTRIKE READY flashes.</p>
+          <div class="button-row">
+            <button id="startBtn3" type="button">Start Mission</button>
+            <button class="secondary" id="howBtn3" type="button">Controls</button>
+          </div>
+        </div>`;
+      document.querySelector("#startBtn3").addEventListener("click", startGame);
+      document.querySelector("#howBtn3").addEventListener("click", showControls);
+    }
+
+    function updateHud() {
+      levelText.textContent = `${state.level + 1}`;
+      healthText.textContent = Math.max(0, Math.ceil(state.player.hp));
+      scoreText.textContent = Math.floor(state.score);
+      const boss = state.enemies.find(e => e.boss);
+      bossText.textContent = boss ? `${Math.max(0, Math.ceil((boss.hp / boss.maxHp) * 100))}%` : "--";
+    }
+
+    function update(dt, t) {
+      if (state.mode !== "playing") return;
+      const p = state.player;
+      const { w } = view();
+      const ground = groundY();
+      p.invuln = Math.max(0, p.invuln - dt * 1000);
+      p.fireBoost = Math.max(1, p.fireBoost - dt * 0.08);
+      p.vx = 0;
+      if (keys.left) { p.vx = -230; p.facing = -1; }
+      if (keys.right) { p.vx = 230; p.facing = 1; }
+      if (keys.jump && p.grounded) {
+        p.vy = -690;
+        p.grounded = false;
+      }
+      p.vy += 1700 * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.x = Math.max(10, Math.min(state.worldLength - p.w - 12, p.x));
+      if (p.y >= ground - p.h) {
+        p.y = ground - p.h;
+        p.vy = 0;
+        p.grounded = true;
+      }
+      state.camera = clamp(p.x - w * 0.36, 0, Math.max(0, state.worldLength - w));
+
+      updateLaser(dt);
+      updateEnemies(dt);
+      updateProjectiles(dt);
+      updatePowerups(dt);
+      updateParticles(dt);
+      updateAirstrike(dt);
+
+      if (state.enemies.length === 0) {
+        if (state.level < 3) {
+          setupLevel(state.level + 1);
+        } else {
+          winGame();
+        }
+      }
+      if (p.hp <= 0) loseGame();
+      state.flash = Math.max(0, state.flash - dt * 1000);
+      updateHud();
+    }
+
+    function updateLaser(dt) {
+      if (!keys.fire) return;
+      const p = state.player;
+      const beam = laserBox();
+      let hitAny = false;
+      state.enemies.forEach(enemy => {
+        if (rectsOverlap(beam, enemyBox(enemy))) {
+          const damage = 95 * dt * p.fireBoost;
+          enemy.hp -= damage;
+          hitAny = true;
+          addSpark(enemy.x + enemy.w * 0.5, enemy.y + enemy.h * 0.5, "spark");
+          if (enemy.boss) checkBossThreshold(enemy);
+        }
+      });
+      if (hitAny) state.score += 18 * dt;
+      const destroyed = state.enemies.filter(e => e.hp <= 0);
+      destroyed.forEach(enemy => {
+        boom(enemy.x + enemy.w * 0.5, enemy.y + enemy.h * 0.5, enemy.boss ? 34 : 16);
+        state.score += enemy.boss ? 5000 : 350;
+        if (!enemy.boss && Math.random() < 0.18) {
+          state.powerups.push({ x: enemy.x + enemy.w / 2, y: enemy.y, w: 38, h: 48, vy: -90 });
+        }
+      });
+      state.enemies = state.enemies.filter(e => e.hp > 0);
+    }
+
+    function checkBossThreshold(boss) {
+      const ratio = boss.hp / boss.maxHp;
+      if (ratio <= state.nextThreshold && !state.airstrikeReady) {
+        state.airstrikeReady = true;
+        state.flash = 999999;
+      }
+    }
+
+    function callAirstrike() {
+      const boss = state.enemies.find(e => e.boss);
+      if (!boss || !state.airstrikeReady || state.airstrike) return;
+      state.airstrikeReady = false;
+      state.flash = 0;
+      state.airstrike = { x: -180, y: 70, bombs: [], dropTimer: 260, life: 2400 };
+      state.projectiles = [];
+    }
+
+    function updateAirstrike(dt) {
+      if (!state.airstrike) return;
+      const strike = state.airstrike;
+      strike.x += 820 * dt;
+      strike.life -= dt * 1000;
+      strike.dropTimer -= dt * 1000;
+      const boss = state.enemies.find(e => e.boss);
+      if (strike.dropTimer <= 0 && boss) {
+        strike.dropTimer = 260;
+        strike.bombs.push({ x: strike.x + 86, y: strike.y + 38, vy: 520 });
+      }
+      strike.bombs.forEach(bomb => {
+        bomb.y += bomb.vy * dt;
+        if (boss && bomb.y > boss.y + random(20, boss.h - 20)) {
+          bomb.hit = true;
+          boss.hp -= boss.maxHp * 0.13;
+          boom(boss.x + random(20, boss.w - 20), boss.y + random(20, boss.h - 20), 28);
+          state.score += 650;
+        }
+      });
+      strike.bombs = strike.bombs.filter(b => !b.hit && b.y < view().h + 80);
+      if (boss && boss.hp <= boss.maxHp * state.nextThreshold - boss.maxHp * 0.23) {
+        state.nextThreshold -= 0.25;
+      }
+      if (boss && boss.hp <= 0) {
+        boss.hp = 0;
+        state.enemies = [];
+      }
+      if (strike.life <= 0 && strike.x > view().w + 160) state.airstrike = null;
+    }
+
+    function updateEnemies(dt) {
+      const level = levels[state.level];
+      state.enemies.forEach(enemy => {
+        if (!level.projectile && !enemy.boss) return;
+        enemy.fireTimer -= dt * 1000;
+        if (enemy.fireTimer <= 0) {
+          enemy.fireTimer = enemy.boss ? random(430, 760) : random(level.fireRate * 0.7, level.fireRate * 1.25);
+          const target = state.player;
+          const sx = enemy.x + enemy.w * 0.35;
+          const sy = enemy.y + enemy.h * 0.45;
+          const dx = (target.x + target.w / 2) - sx;
+          const dy = (target.y + target.h / 2) - sy;
+          const d = Math.max(1, Math.hypot(dx, dy));
+          const speed = enemy.boss ? random(240, 360) : state.level === 2 ? 290 : 220;
+          const spread = enemy.boss ? random(-0.45, 0.45) : random(-0.12, 0.12);
+          state.projectiles.push({
+            x: sx, y: sy, r: enemy.boss ? 15 : 12,
+            vx: (dx / d) * speed,
+            vy: (dy / d) * speed + spread * 120,
+            damage: enemy.boss ? 12 : level.damage,
+            kind: Math.random() < 0.5 ? "globGreen" : "globPurple"
+          });
+        }
+      });
+    }
+
+    function updateProjectiles(dt) {
+      const p = state.player;
+      state.projectiles.forEach(glob => {
+        glob.x += glob.vx * dt;
+        glob.y += glob.vy * dt;
+        if (p.invuln <= 0 && circleRect(glob, playerBox())) {
+          glob.hit = true;
+          p.hp -= glob.damage;
+          p.invuln = 650;
+          boom(p.x + p.w / 2, p.y + p.h / 2, 7, "#91ff2f");
+        }
+      });
+      const { w, h } = view();
+      state.projectiles = state.projectiles.filter(g => !g.hit && g.x > state.camera - 120 && g.x < state.camera + w + 120 && g.y > -80 && g.y < h + 80);
+    }
+
+    function updatePowerups(dt) {
+      const ground = groundY();
+      state.powerups.forEach(item => {
+        item.vy += 900 * dt;
+        item.y += item.vy * dt;
+        if (item.y + item.h > ground) {
+          item.y = ground - item.h;
+          item.vy = 0;
+        }
+        if (rectsOverlap(item, playerBox())) {
+          item.taken = true;
+          state.player.hp = Math.min(100, state.player.hp + 20);
+          state.player.fireBoost = 2.2;
+          state.score += 250;
+        }
+      });
+      state.powerups = state.powerups.filter(item => !item.taken);
+    }
+
+    function updateParticles(dt) {
+      state.particles.forEach(p => {
+        p.life -= dt * 1000;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 180 * dt;
+      });
+      state.particles = state.particles.filter(p => p.life > 0);
+    }
+
+    function laserBox() {
+      const p = state.player;
+      const startX = p.facing > 0 ? p.x + p.w - 8 : p.x - 560;
+      return { x: startX, y: p.y + 45, w: 570, h: 18 };
+    }
+
+    function playerBox() {
+      const p = state.player;
+      return { x: p.x + 18, y: p.y + 18, w: p.w - 31, h: p.h - 22 };
+    }
+
+    function enemyBox(e) {
+      return { x: e.x + e.w * 0.12, y: e.y + e.h * 0.12, w: e.w * 0.76, h: e.h * 0.76 };
+    }
+
+    function draw(t) {
+      const { w, h } = view();
+      ctx.clearRect(0, 0, w, h);
+      drawBackground(w, h);
+      ctx.save();
+      ctx.translate(-state.camera, 0);
+      drawWorldFloor(w, h);
+      state.powerups.forEach(drawPowerup);
+      state.enemies.forEach(drawEnemy);
+      state.projectiles.forEach(drawProjectile);
+      if (keys.fire && state.mode === "playing") drawLaser(t);
+      drawPlayer(t);
+      state.particles.forEach(drawParticle);
+      ctx.restore();
+      drawAirstrike();
+      drawAlerts(w, h, t);
+    }
+
+    function drawBackground(w, h) {
+      const frame = bgFrames[state.level] || bgFrames[0];
+      if (assets.bg.complete) {
+        ctx.drawImage(assets.bg, frame[0], frame[1], frame[2], frame[3], 0, 0, w, h);
+      } else {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, w, h);
+      }
+      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    function drawWorldFloor(w, h) {
+      const g = groundY();
+      ctx.fillStyle = "rgba(4,6,7,0.65)";
+      ctx.fillRect(state.camera - 20, g, w + 60, h - g);
+      ctx.strokeStyle = state.level === 3 ? "#91ff2f" : "#69737a";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(state.camera - 20, g + 2);
+      ctx.lineTo(state.camera + w + 30, g + 2);
+      ctx.stroke();
+    }
+
+    function drawPlayer(t) {
+      const p = state.player;
+      let frame = playerFrames.idle;
+      if (p.invuln > 0 && Math.floor(t / 80) % 2 === 0) return;
+      if (!p.grounded) frame = playerFrames.jump;
+      else if (keys.fire) frame = playerFrames.fire;
+      else if (Math.abs(p.vx) > 0) frame = Math.floor(t / 150) % 2 ? playerFrames.walkA : playerFrames.walkB;
+      drawSprite(assets.player, frame, p.x + p.w / 2, p.y + p.h / 2, 112, 150, p.facing < 0);
+    }
+
+    function drawEnemy(e) {
+      const frame = moldFrames[e.type] || moldFrames.small;
+      const scale = e.boss ? 1.25 + Math.sin(performance.now() * 0.003) * 0.03 : 1;
+      drawSprite(assets.mold, frame, e.x + e.w / 2, e.y + e.h / 2, e.w * scale, e.h * scale);
+      ctx.fillStyle = "#061007";
+      ctx.fillRect(e.x, e.y - 11, e.w, 6);
+      ctx.fillStyle = e.boss ? "#ff3cff" : "#91ff2f";
+      ctx.fillRect(e.x, e.y - 11, e.w * Math.max(0, e.hp / e.maxHp), 6);
+    }
+
+    function drawProjectile(g) {
+      drawSprite(assets.mold, moldFrames[g.kind], g.x, g.y, g.r * 3.2, g.r * 3.2);
+    }
+
+    function drawLaser(t) {
+      const beam = laserBox();
+      const p = state.player;
+      const x = p.facing > 0 ? p.x + p.w - 2 : p.x - 548;
+      const y = p.y + 52;
+      const grad = ctx.createLinearGradient(x, y, x + 550 * p.facing, y);
+      grad.addColorStop(0, "#ffffff");
+      grad.addColorStop(0.25, "#91ff2f");
+      grad.addColorStop(1, "#ff3cff");
+      ctx.fillStyle = grad;
+      ctx.shadowColor = "#91ff2f";
+      ctx.shadowBlur = 18;
+      ctx.fillRect(beam.x, beam.y, beam.w, beam.h);
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(255,255,255,0.8)";
+      ctx.fillRect(beam.x, beam.y + 6, beam.w, 4);
+    }
+
+    function drawPowerup(item) {
+      drawSprite(assets.mold, moldFrames.clean, item.x + item.w / 2, item.y + item.h / 2, 46, 58);
+    }
+
+    function drawAirstrike() {
+      if (!state.airstrike) return;
+      const s = state.airstrike;
+      drawSprite(assets.mold, moldFrames.b2, s.x, s.y, 180, 82);
+      ctx.save();
+      ctx.fillStyle = "#111";
+      s.bombs.forEach(b => {
+        ctx.beginPath();
+        ctx.ellipse(b.x, b.y, 8, 17, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawParticle(p) {
+      const a = Math.max(0, p.life / p.max);
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * (1.25 - a * 0.2), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    function drawAlerts(w, h, t) {
+      if (state.airstrikeReady && Math.floor(t / 220) % 2 === 0) {
+        comicText("AIRSTRIKE READY - PRESS B", w / 2, 86, "#ffcc37");
+      } else if (state.flash > 0 && state.mode === "playing") {
+        comicText(levels[state.level].name, w / 2, 86, "#91ff2f");
+      }
+      if (state.player.fireBoost > 1.05) comicText("CLEAN BOOST!", w / 2, 130, "#67e7ff", 24);
+    }
+
+    function drawSprite(img, frame, x, y, w, h, flip = false) {
+      if (!img.complete) return;
+      ctx.save();
+      ctx.translate(x, y);
+      if (flip) ctx.scale(-1, 1);
+      ctx.drawImage(img, frame[0], frame[1], frame[2], frame[3], -w / 2, -h / 2, w, h);
+      ctx.restore();
+    }
+
+    function comicText(text, x, y, color, size = 30) {
+      ctx.save();
+      ctx.font = `1000 ${size}px Arial`;
+      ctx.textAlign = "center";
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#000";
+      ctx.fillStyle = color;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function addSpark(x, y) {
+      if (Math.random() > 0.45) return;
+      state.particles.push({ x, y, vx: random(-40, 40), vy: random(-70, 20), r: random(2, 5), life: 170, max: 170, color: "#d8ff73" });
+    }
+
+    function boom(x, y, count, color = "#ff9d23") {
+      for (let i = 0; i < count; i++) {
+        state.particles.push({ x, y, vx: random(-210, 210), vy: random(-250, 90), r: random(3, 10), life: random(360, 760), max: 760, color: Math.random() < 0.35 ? "#91ff2f" : color });
+      }
+    }
+
+    function winGame() {
+      state.mode = "won";
+      overlay.style.display = "grid";
+      overlay.innerHTML = `<div class="panel"><h2>Mycella Milleriana Cleared!</h2><p>Dr. Dave has restored the taxonomy from Chaos back to Slightly Suspicious.</p><p>Final score: ${Math.floor(state.score)}</p><div class="button-row"><button id="againBtn" type="button">Play Again</button><button class="secondary" id="controlsBtn" type="button">Controls</button></div></div>`;
+      document.querySelector("#againBtn").addEventListener("click", startGame);
+      document.querySelector("#controlsBtn").addEventListener("click", showControls);
+    }
+
+    function loseGame() {
+      state.mode = "lost";
+      overlay.style.display = "grid";
+      overlay.innerHTML = `<div class="panel"><h2>Containment Breached</h2><p>The mold filed a counterclaim and briefly won custody of the hallway.</p><p>Score: ${Math.floor(state.score)}</p><div class="button-row"><button id="retryBtn" type="button">Retry Mission</button><button class="secondary" id="manualBtn" type="button">Controls</button></div></div>`;
+      document.querySelector("#retryBtn").addEventListener("click", startGame);
+      document.querySelector("#manualBtn").addEventListener("click", showControls);
+    }
+
+    function loop(t) {
+      const dt = Math.min(0.033, (t - state.lastTime) / 1000 || 0);
+      state.lastTime = t;
+      update(dt, t);
+      draw(t);
+      requestAnimationFrame(loop);
+    }
+
+    function rectsOverlap(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function circleRect(c, r) {
+      const x = clamp(c.x, r.x, r.x + r.w);
+      const y = clamp(c.y, r.y, r.y + r.h);
+      return Math.hypot(c.x - x, c.y - y) < c.r;
+    }
+
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function random(min, max) { return min + Math.random() * (max - min); }
+
+    function bindHold(id, key) {
+      const btn = document.querySelector(id);
+      const on = e => { e.preventDefault(); keys[key] = true; };
+      const off = e => { e.preventDefault(); keys[key] = false; };
+      btn.addEventListener("pointerdown", on);
+      btn.addEventListener("pointerup", off);
+      btn.addEventListener("pointercancel", off);
+      btn.addEventListener("pointerleave", off);
+    }
+
+    bindHold("#leftBtn", "left");
+    bindHold("#rightBtn", "right");
+    bindHold("#jumpBtn", "jump");
+    bindHold("#fireBtn", "fire");
+    document.querySelector("#startBtn").addEventListener("click", startGame);
+    document.querySelector("#howBtn").addEventListener("click", showControls);
+
+    window.addEventListener("keydown", e => {
+      if (["ArrowLeft", "KeyA"].includes(e.code)) keys.left = true;
+      if (["ArrowRight", "KeyD"].includes(e.code)) keys.right = true;
+      if (["ArrowUp", "KeyW", "Space"].includes(e.code)) { keys.jump = true; e.preventDefault(); }
+      if (["KeyJ", "KeyK"].includes(e.code)) keys.fire = true;
+      if (e.code === "KeyB") callAirstrike();
+    });
+    window.addEventListener("keyup", e => {
+      if (["ArrowLeft", "KeyA"].includes(e.code)) keys.left = false;
+      if (["ArrowRight", "KeyD"].includes(e.code)) keys.right = false;
+      if (["ArrowUp", "KeyW", "Space"].includes(e.code)) keys.jump = false;
+      if (["KeyJ", "KeyK"].includes(e.code)) keys.fire = false;
+    });
+
+    gameWrap.addEventListener("pointerdown", e => {
+      if (e.target.closest("button")) return;
+      keys.fire = true;
+    });
+    gameWrap.addEventListener("pointerup", () => { keys.fire = false; });
+
+    resizeCanvas();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
